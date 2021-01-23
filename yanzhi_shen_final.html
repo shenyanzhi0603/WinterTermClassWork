@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script>
+        //initiate the board default value
+        var board = ["","","","","","","","",""];
+
+        function disableUserButton(){
+            document.getElementById("btn-store").disabled = true;
+        }
+
+        function ableUserButton(){
+            document.getElementById("btn-store").disabled = false;
+        }
+
+        function moveStore(){
+            //detect the boxes value everytime the button is clicked
+            var vs1 = document.f1.s1.value;
+            var vs2 = document.f1.s2.value;
+            var vs3 = document.f1.s3.value;
+            var vs4 = document.f1.s4.value;
+            var vs5 = document.f1.s5.value;
+            var vs6 = document.f1.s6.value;
+            var vs7 = document.f1.s7.value;
+            var vs8 = document.f1.s8.value;
+            var vs9 = document.f1.s9.value;
+            //create the boxes array
+            var newbox = [vs1, vs2, vs3, vs4, vs5, vs6, vs7, vs8, vs9];
+            //compare the boxes value with the old stored array data
+            for(i=0; i<9; i++){if(newbox[i]!=board[i]){board[i] = newbox[i];}}
+            //check if the user wins
+            var ctn_status = true;
+            if((newbox[0]==newbox[4] && newbox[4]==newbox[8] && newbox[8]=="X")
+                ||(newbox[2]==newbox[4] && newbox[4]==newbox[6] && newbox[6]=="X")
+                ||(newbox[1]==newbox[4] && newbox[4]==newbox[7] && newbox[7]=="X")
+                ||(newbox[0]==newbox[3] && newbox[3]==newbox[6] && newbox[6]=="X")
+                ||(newbox[2]==newbox[5] && newbox[5]==newbox[8] && newbox[8]=="X")
+                ||(newbox[0]==newbox[1] && newbox[1]==newbox[2] && newbox[2]=="X")
+                ||(newbox[3]==newbox[4] && newbox[4]==newbox[5] && newbox[5]=="X")
+                ||(newbox[6]==newbox[7] && newbox[7]==newbox[8] && newbox[8]=="X")){
+                    ctn_status = false;
+                    alert("X(User) is the winner!");
+                    disableUserButton();
+                    return;
+            } else { //the user doesn't win
+                disableUserButton(); //disable the user input button
+                //conduct the steps for PC
+                for(i=0; i<9; i++){
+                    if(board[i]==""){
+                        console.log("board"+board+"i"+i);
+                        newbox[i] = "O"; //make the step in newbox
+                        //test if the computer is the winner
+                        if ((newbox[0]==newbox[4] && newbox[4]==newbox[8] && newbox[8]=="O")
+                            ||(newbox[2]==newbox[4] && newbox[4]==newbox[6] && newbox[6]=="O")
+                            ||(newbox[1]==newbox[4] && newbox[4]==newbox[7] && newbox[7]=="O")
+                            ||(newbox[0]==newbox[3] && newbox[3]==newbox[6] && newbox[6]=="O")
+                            ||(newbox[2]==newbox[5] && newbox[5]==newbox[8] && newbox[8]=="O")
+                            ||(newbox[0]==newbox[1] && newbox[1]==newbox[2] && newbox[2]=="O")
+                            ||(newbox[3]==newbox[4] && newbox[4]==newbox[5] && newbox[5]=="O")
+                            ||(newbox[6]==newbox[7] && newbox[7]==newbox[8] && newbox[8]=="O")){
+                                //store the value
+                                board[i] = newbox[i];
+                                ctn_status = false;
+                                //show the move on the frontend
+                                var insertmove = document.getElementById('s'+String(i+1));
+                                insertmove.value = "O";
+                                alert("O(PC) is the winner!");
+                                break;     
+                        } else {newbox[i] = "";} //rollback to orginal value
+                    }
+                }    
+                //no choice for winning
+                //check how user will move next and prevent the possibility for user winning
+                if(ctn_status){
+                    console.log("now?",board);
+                    for(i=0; i<9; i++){
+                        if(board[i]==""){
+                            console.log("block user function, i: ",i);
+                            //indicate the next step the user will go
+                            newbox[i] = "X";
+                            //check if the user wins
+                            if((newbox[0]==newbox[4] && newbox[4]==newbox[8] && newbox[8]=="X")
+                                ||(newbox[2]==newbox[4] && newbox[4]==newbox[6] && newbox[6]=="X")
+                                ||(newbox[1]==newbox[4] && newbox[4]==newbox[7] && newbox[7]=="X")
+                                ||(newbox[0]==newbox[3] && newbox[3]==newbox[6] && newbox[6]=="X")
+                                ||(newbox[2]==newbox[5] && newbox[5]==newbox[8] && newbox[8]=="X")
+                                ||(newbox[0]==newbox[1] && newbox[1]==newbox[2] && newbox[2]=="X")
+                                ||(newbox[3]==newbox[4] && newbox[4]==newbox[5] && newbox[5]=="X")
+                                ||(newbox[6]==newbox[7] && newbox[7]==newbox[8] && newbox[8]=="X")){
+                                    //if win, block the move
+                                    newbox[i] = "O";
+                                    board[i] = "O";
+                                    ctn_status = false;
+                                    var insertmove = document.getElementById('s'+String(i+1));
+                                    insertmove.value = "O";
+                                    console.log("blocked!");
+                                    ableUserButton();
+                                    break;
+                            } else {newbox[i] = "";} //rollback to orginal value
+                        }
+                    }
+                }
+                
+                //if no way for the user to win in next step
+                //make "O" two consecutive ones in a line - letting computer moves twice that enables a pc win
+                if(ctn_status){
+                    var breakCheck = false;
+                    for(i=0; i<8; i++){
+                        if(board[i]==""){
+                            for(j=i+1; j<9; j++){
+                                if(board[j]==""){
+                                    console.log("make myself consecutive");
+                                    //store the next two moves
+                                    newbox[i] = "O";
+                                    newbox[j] = "O";
+                                    //check if there will be a win
+                                    if ((newbox[0]==newbox[4] && newbox[4]==newbox[8] && newbox[8]=="O")
+                                        ||(newbox[2]==newbox[4] && newbox[4]==newbox[6] && newbox[6]=="O")
+                                        ||(newbox[1]==newbox[4] && newbox[4]==newbox[7] && newbox[7]=="O")
+                                        ||(newbox[0]==newbox[3] && newbox[3]==newbox[6] && newbox[6]=="O")
+                                        ||(newbox[2]==newbox[5] && newbox[5]==newbox[8] && newbox[8]=="O")
+                                        ||(newbox[0]==newbox[1] && newbox[1]==newbox[2] && newbox[2]=="O")
+                                        ||(newbox[3]==newbox[4] && newbox[4]==newbox[5] && newbox[5]=="O")
+                                        ||(newbox[6]==newbox[7] && newbox[7]==newbox[8] && newbox[8]=="O")){
+                                            //if yes, just give the next move i
+                                            console.log("me consecutive!"+board);
+                                            board[i] = "O";
+                                            ctn_status = false;
+                                            var insertmove = document.getElementById('s'+String(i+1));
+                                            insertmove.value = "O";
+                                            ableUserButton();
+                                            breakCheck = true;
+                                            break;
+                                    } else { //rollback to orginal value
+                                            newbox[i] = ""; 
+                                            newbox[j] = "";
+                                }
+                            }
+                        }
+                        if(breakCheck){break;} //break out of two nested loop
+                        console.log("me not consecutive!"+board);
+                        }       
+                    }
+                }
+
+                //other condition - give a random move
+                if(ctn_status){
+                    for(i=0; i<9; i++){
+                        if(board[i]==""){
+                            board[i] = "O";
+                            var insertmove = document.getElementById('s'+String(i+1));
+                            insertmove.value = "O";
+                            ableUserButton();
+                            break;
+                        }
+                    } 
+                }   
+            } //end the big else
+        } //end function movestore()
+
+    //there are two players - the user and computer, and the moveStore() function needs to be performed every time a player moves
+    //let X be user and O be computer
+    //after the user moves, he clicks on the moveStore() button, and the button would be disabled
+    //the computer then calculates and move the next step; after finishing, the userMoveFinished button status changes to clickable.
+    //after the computer moves, the UI needs to make changes to indicate the user the new move, which requires write the frontend through backend
+    //after user make the move, the button is clicked and then disabled until computer moves
+    //everytime the button is clicked or the computer moves, check whether there is a winner
+
+        function pleaseReset(){
+            //reset board data
+            board = ["","","","","","","","",""];
+            //enable button
+            ableUserButton();
+            //refresh page
+            location.reload();
+        }
+    </script>
+</head>
+
+<body>
+    <h2>final</h2>
+
+    <form name=f1>
+        <input type=text id="s1" name="s1" size=1><input type=text id="s2" name="s2" size=1><input type=text id="s3" name="s3" size=1><br>
+        <input type=text id="s4" name="s4" size=1><input type=text id="s5" name="s5" size=1><input type=text id="s6" name="s6" size=1><br>
+        <input type=text id="s7" name="s7" size=1><input type=text id="s8" name="s8" size=1><input type=text id="s9" name="s9" size=1><p>
+        <br>
+        <input type=button id="btn-store" value="I finished the move!" onclick="moveStore()"><br>
+        <input type=button id="btn-reset" value="Reset" onclick="pleaseReset()">
+    </form>
+</body>
+</html>

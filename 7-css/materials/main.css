@@ -1,0 +1,25 @@
+h2 {
+    color: MediumSeaGreen;
+}
+
+h3 {
+    display: inline-block;
+}
+
+b {
+    font: 300;
+    color: rgb(72, 140, 103);
+}
+
+img {
+    border: 0ch;
+    border-radius: 2%;
+}
+
+.slider-container {
+    padding: 3% auto;
+}
+
+.text-style-set {
+    padding: 1%;
+}
